@@ -1,4 +1,3 @@
-var selectedType = "---";
 var types = [
     "---",
     "Normal", 
@@ -20,6 +19,7 @@ var types = [
     "Dark", 
     "Fairy"
 ];
+var totalPokemon;
 
 var checkboxWrapper = document.querySelector('#speciesFilter div');
 
@@ -47,14 +47,18 @@ newSelect.addEventListener('change', (e) => {
     filterByType(e.target.value);
 });
 
-var observer = new MutationObserver(_ => {filterByType(selectedType)});
-var container = document.querySelector('#speciesTableTbody');
-observer.observe(container, { childList : true})
-
-function filterByType(type) {
-    selectedType = type;
-    var trElements = document.querySelectorAll('table tbody tr');
+async function filterByType(type) {
+    if (!totalPokemon) {
+        await loadAll(type);
+    } else {
+        filter(type);
+    }
     
+}
+
+function filter(type) {
+    var trElements = document.querySelectorAll('table tbody tr');
+
     for (var i = 0; i < trElements.length; i++) {
         var divElements = trElements[i].querySelectorAll('div.background');
         var hasType = false;
@@ -74,19 +78,14 @@ function filterByType(type) {
     }
 }
 
-/*
-function loadAll() {
+async function loadAll(type) {
     var counter = 0;
     for(let i = 0, j = tracker.length; i < j; i++){
-        if(counter < 1355){
-            if(tracker[i]["filter"].length === 0 && !document.getElementById(tracker[i]["key"])){
-                window["appendSpeciesToTable"](tracker[i]["key"])
-                counter++
-            }
-        }
-        else{
-            break
+        if(tracker[i]["filter"].length === 0 && !document.getElementById(tracker[i]["key"])){
+            window["appendSpeciesToTable"](tracker[i]["key"])
+            counter++
         }
     }
+    totalPokemon = counter;
+    filter(type)
 }
-*/
